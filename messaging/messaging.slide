@@ -1,0 +1,189 @@
+# Basics of Messaging and Event Driven Architecture
+
+20 May 2021
+
+Harshad Nawathe
+Application Developer, ThoughtWorks
+harshadn@thoughtworks.com
+
+## Overview
+- Messaging
+- Channel Types
+- Message Types
+- Implementation patterns
+- Architectural patterns
+
+## Messaging
+- Two or more processes communicate with each other in an *asynchronous* manner by sending a *message* over a *message channel*.
+- Requires *a messaging middleware* to transfer a message from *sender* to *receiver*. 
+- The *sender* and the *receiver* are completely decoupled from each other.
+- Messaging can be used for sharing *the data* as well as *the functionality*.
+
+## Channel Types
+
+## Point-to-point channel
+.image images/point-to-point.png
+- Semantics 
+    - *One-to-one* type.
+    - Any given message is consumed by the only one receiver.
+    - The *channel* is *owned* by the receiver.
+    - The sender is aware of the receiver.
+- Implementations: JMS Queue, SQS, RabbitMQ, *Kafka Topic*.
+
+## Publish-Subscribe channel
+.image images/pub-sub.png 195 _
+- Semantics
+    - *One-to-many* type.
+    - Any given message is consumed by all receivers that subscribe to the channel.
+    - The *channel* is *owned* by the sender.
+    - The sender is not aware of the receiver.
+- Implementations: Kafka Topic, *JMS Topic, RabbitMQ Exchange*.
+
+## Message Types
+
+## Document message
+- Sender wants to share a piece of data with a receiver.
+- Sender **does not care** how the receiver consumes the data.
+- *Content* of the message is important.
+    - *Guaranteed delivery* should be taken into consideration.
+- The *timing* of the message when it is sent and received is relatively less important.
+    - *Message expiration* may not be required. 
+- Recommended channel types
+    - Point-to-point
+    - Publish-Subscribe
+
+## Command message
+- Sender wants receiver to take a specific action upon receiving the message.
+- Command message may contain the method parameters.
+- Command message may contain the address of the reply channel.
+- Commands are sent over a *point-to-point channel* so that they are consumed and executed only once.
+- Command-Response messages must contain an identifier for correlation.
+
+## Command is different than RPC
+- In RPC client thread of execution waits for the response from the server and then processes it.
+
+.image images/rpc.png
+
+## Command is asynchronous
+- The sender thread just sends the message to a message broker.
+- The receiver thread processes the response after getting it from a message broker.
+
+.image images/command-invoking.png
+
+## Event message
+- Sender wants to notify receivers about the action they have taken.
+- Sender **does not care** how the receiver reacts to the event.
+- The *timing* of the message when it is sent and received is important.
+    - An event must be issued as soon as change occurs.
+    - An event must be processed quickly while it's still relevant.
+    - *Message expiration* must be taken into consideration.
+- The *content* of the message is relatively less important.
+    - *Guaranteed delivery* may not be useful as events are frequent and require quick delivery.
+- Events are sent over a *publish-subscribe channel* so that all the receivers will get a copy of a given message. 
+
+## Event design guidelines
+- Use the Singular Event Definition per stream.
+- Use the narrowest data types.
+- Keep events single purpose.
+    - Do not include flags / fields providing alternate meaning.
+- Include relevant information in the event.
+    - Minimize the size of Events.
+    - Involve perspective of consumers.
+    - Don't just tell *what* but also include *everything* that has happened.
+
+## Message Types summary
+- Document
+    - For sharing the data with other applications.
+- Command
+    - For invoking a service on another application.
+    - Sent over a *point-to-point channel*.
+- Event
+    - For notifying a change to other applications.
+    - Sent over a *publish-subscribe channel*.
+
+## Implementation patterns
+
+## Event notification pattern
+.image images/event-notification.png 290 _
+
+- The *subject* broadcasts *what* has happened.
+    - Message body is *null* or *empty*.
+- The *observer* reaches out to *the subject* to get details.
+    - Command - Reply / RPC can be used to get details.
+- Message expiration must be considered.
+
+## Event carried state transfer
+.image images/ecst.png
+
+- *The subject* broadcasts *what* has happened along with the relevant details.
+- Simple to implement as compared to event notification.
+- Large message bodies can be a problem if events are very frequent.
+    - Details might not be relevant to all the receivers.
+- Schema evolution should be done with careful planning.
+
+## Common channel for all event types
+.image images/single-channel-for-all.png
+
+- Somewhat inefficient for observers who are not interested in all events.
+- Event stream lacks a clear logical meaning.
+- Schema management for such stream is somewhat clumsy.
+    - Introduction of new events and their handlers might require some careful coordination.
+
+## Channel per event type
+.image images/channel-per-event.png
+
+- Each event stream has clear logical meaning.
+- Observers can subscribe to a particular stream of their interest.
+- Schema is fixed for each of the event stream.
+
+## Command with a reply in event (anti)pattern
+.image images/command-reply-in-event.png
+
+- The sender sends a command over a point-to-point channel.
+- Server emits the response in its event stream.
+- The sender will need to perform  filtering on the event stream to find a response to the command.
+    - Highly inefficient.
+
+## Command with a reply channel pattern
+.image images/command-reply-in-channel.png
+
+- The sender sends a command over a point-to-point channel.
+- The sender specifies the address of the reply channel.
+- The server writes the response to the given reply channel.
+
+## Implementing workflows
+
+## Things to consider
+- Updating the workflow
+- Distributed transactions
+- Monitoring the workflow
+ 
+## Choreography
+.image images/choreography.png
+
+- *Highly decoupled*: Services operate within their bounded context.
+- Services react to their input events as they arrive.
+- Services does not have knowledge of business operations performed either in upstream or downstream.
+- *Emergent Behavior*: The relationships between the services define the workflow.
+
+## Maintenance of Choreographed flows
+- Adding new functions at the end or beginning of the workflow is relatively simple.
+- Adding new functions in-between the flow or rearranging the steps in the flow could be complex.
+- Works well for simple workflows but as size and complexity of flows increase maintainability becomes a challenge.
+- Monitoring a choreographed flow is particularly difficult due to its asynchronous nature.
+
+## Orchestration
+.image images/orchestration.png
+
+## Orchestration
+- The workflow is implemented in a central microservice that issues commands to other services.
+- The Orchestrator defines and controls the workflow execution.
+- Monitoring the workflow is simple as the state of the workflow can be easily obtained from the orchestrator.
+- The Orchestrator becomes the single point of change for altering the workflow.
+
+## Leftover topics
+- Schema management
+- Distributed transaction handling
+- Failure handling
+- Event router
+- Retry service
