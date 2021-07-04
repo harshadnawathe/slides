@@ -1,0 +1,201 @@
+# Fusion
+
+19 Aug 2020
+
+Harshad Nawathe
+Application Developer, ThoughtWorks
+harshadn@thoughtworks.com
+
+Lilima Pradhan
+Application Developer, ThoughtWorks
+plilima@thoughtworks.com
+
+
+## Overview
+- History of request generation
+- Design considerations
+- Design concepts
+- JsonModel\<T\>
+- Mapping
+- Demo
+
+## History of request generation
+
+## Request Model approach
+Model the request using *Kotlin* classes.
+
+Jackson *ObjectMapper* is used for serialization.
+
+**Used in**: 
+
+auth-service, loan-service, identity-service, risk-service, etc.
+
+**Pros:** 
+- Type safety
+- Easy to understand
+
+**Cons:**
+- Request construction complexity increases as request size grows.
+- Managing product/environment specific configuration is quite difficult.
+
+## JSLT Templates
+A JSLT template in classpath resources defines the structure of the request and mapping from domain objects.
+
+**Used in:**
+
+account-service, customer-service, lead-service, insurance-service,  etc.
+
+**Pros:**
+- Request construction is easy.
+- Managing product/environment specific configuration is somewhat simpler.
+
+**Cons:**
+- No type safety.
+- Intermediate dynamic models.
+- Difficult to understand and implement.
+
+## Some thoughts
+
+Request models make contract explicit.
+
+Very large request models is not a problem.
+
+- Constructing very large request objects is a problem.
+- Initializing request object with product specific defaults is a problem.
+- Overriding request object fields with environment specific config is a problem.
+
+Intermediate models make the code difficult to understand.
+
+## Design considerations
+
+## Developer experience
+**Simple to use.**
+- Intuitive
+- TDD-able
+- *Spring* Free
+
+**Simple to understand.**
+- Declarative
+- Fewer components
+- Local reasoning ability
+
+## Attributes
+**Must have**
+
+- Type safety / Explicit contract.
+- Ease of request object construction.
+- Ability to configure defaults easily.
+- Ability to override fields.
+- Easy mapping from domain to request.
+
+**Good to have**
+- Efficiency
+- Performance
+
+## Design concepts
+
+## Composition
+
+Composing from multiple parts:
+
+.code images/mergeConcept.txt /START_MERGE OMIT/,/END_MERGE OMIT/
+
+Overriding fields:
+
+.code images/mergeConcept.txt /START_OVERRIDE OMIT/,/END_OVERRIDE OMIT/
+
+Composition makes it easy to construct very large request models.
+
+## Complete / Partial model
+A model is complete when underlying json can be converted to the given **Target** type.
+
+A Target type:
+
+.code code/JsonModelExamples.kt /PERSON_START OMIT/,/PERSON_END OMIT/
+
+Model examples:
+
+.code images/partialConcept.txt 
+
+**Type safety**
+
+Request object serialization to json should fail if model is **not complete**.
+
+## Translation to Kotlin: ComposableModel<T>
+
+.code code/ComposableModel.kt /START OMIT/,/END OMIT/
+
+- A *ComposableModel\<T\>* is a container to hold a non-nullable *value* T.
+- A *ComposableModel\<T\>* can be composed *with* any POJO or reactive POJO.
+- A reactive *ComposableModel\<T\>* can be composed *with* any POJO or reactive POJO.
+
+
+## JsonModel<T>
+
+## Construction
+
+- From json text.
+
+.code code/JsonModelExamples.kt /START_CONSTRUCT_JSON OMIT/,/END_CONSTRUCT_JSON OMIT/
+
+- Empty model.
+
+.code code/JsonModelExamples.kt /START_CONSTRUCT_EMPTY OMIT/,/END_CONSTRUCT_EMPTY OMIT/
+
+- From existing value.
+
+.code code/JsonModelExamples.kt /START_CONSTRUCT_VALUE OMIT/,/END_CONSTRUCT_VALUE OMIT/
+
+**Note:** If you are able to use third method to construct a JsonModel with your target type then probably you don't need JsonModel<T> 
+
+## Composition in action
+
+A part of the model is loaded from json text. Remaining is injected using another object of type `Name`
+
+.code code/JsonModelExamples.kt /START_NAME OMIT/,/END_NAME OMIT/
+
+.code code/JsonModelExamples.kt /START_COMPOSE OMIT/,/END_COMPOSE OMIT/
+
+## Overriding in action
+
+.code code/JsonModelExamples.kt /START_OVR OMIT/,/END_OVR OMIT/
+
+## Mapping
+
+## JSLT is not simple
+
+A domain object.
+
+.code code/JsonModelDslExamples.kt /START_DOMAIN OMIT/,/END_DOMAIN OMIT/
+
+Target:
+
+.code code/JsonModelDslExamples.kt /START_TARGET OMIT/,/END_TARGET OMIT/
+
+JSLT Template:
+
+.code code/application.jslt
+
+**JSLT is a new language to learn.**
+
+## DSL is simple
+
+Another way to construct a JsonModel<T>.
+
+.code code/JsonModelDslExamples.kt /START_DSL OMIT/,/END_DSL OMIT/
+
+**DSL gives you functionality of JSLT with the power of Kotlin.**
+
+## Demo
+
+## Code
+
+Very simple: (Just 1 file and many tests)
+- [JsonModel](https://github.com/harshadnawathe/fusionkt/blob/master/src/main/kotlin/com/github/harshadnawathe/fusionkt/json/JsonModel.kt)
+
+Visit [fusionkt](https://github.com/harshadnawathe/fusionkt) for the complete code.
+
+
+
+
+

@@ -1,0 +1,7 @@
+{
+    "applicants": [
+        {
+            "name": join([.firstName, .lastName], " ")
+        }
+    ]
+}
