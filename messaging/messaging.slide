@@ -15,7 +15,7 @@ harshadn@thoughtworks.com
 
 ## Messaging
 
-.image images/messaging.png
+.image images/messaging.drawio.png
 
 - Two or more processes communicate with each other in an *asynchronous* manner by sending a *message* over a *message channel*.
 - Requires *a messaging middleware* to transfer a message from *sender* to *receiver*. 
@@ -25,7 +25,7 @@ harshadn@thoughtworks.com
 ## Channel Types
 
 ## Point-to-point channel
-.image images/point-to-point.png
+.image images/point-to-point.drawio.png
 - Semantics 
     - *One-to-one* type.
     - Any given message is consumed by the only one receiver.
@@ -34,7 +34,7 @@ harshadn@thoughtworks.com
 - Implementations: JMS Queue, SQS, RabbitMQ, *Kafka Topic*.
 
 ## Publish-Subscribe channel
-.image images/pub-sub.png 195 _
+.image images/pub-sub.drawio.png 195 _
 - Semantics
     - *One-to-many* type.
     - Any given message is consumed by all receivers that subscribe to the channel.
@@ -65,13 +65,13 @@ harshadn@thoughtworks.com
 ## Command is different than RPC
 - In RPC client thread of execution waits for the response from the server and then processes it.
 
-.image images/rpc.png
+.image images/rpc.drawio.png
 
 ## Command is asynchronous
 - The sender thread just sends the message to a message broker.
 - The receiver thread processes the response after getting it from a message broker.
 
-.image images/command-invoking.png
+.image images/command-invoking.drawio.png
 
 ## Event message
 - Sender wants to notify receivers about the action they have taken.
@@ -107,7 +107,7 @@ harshadn@thoughtworks.com
 ## Implementation patterns
 
 ## Event notification pattern
-.image images/event-notification.png 290 _
+.image images/event-notification.drawio.png 290 _
 
 - The *subject* broadcasts *what* has happened.
     - Message body is *null* or *empty*.
@@ -116,7 +116,7 @@ harshadn@thoughtworks.com
 - Message expiration must be considered.
 
 ## Event carried state transfer
-.image images/ecst.png
+.image images/ecst.drawio.png
 
 - *The subject* broadcasts *what* has happened along with the relevant details.
 - Simple to implement as compared to event notification.
@@ -125,7 +125,7 @@ harshadn@thoughtworks.com
 - Schema evolution should be done with careful planning.
 
 ## Common channel for all event types
-.image images/single-channel-for-all.png
+.image images/single-channel-for-all.drawio.png
 
 - Somewhat inefficient for observers who are not interested in all events.
 - Event stream lacks a clear logical meaning.
@@ -133,14 +133,14 @@ harshadn@thoughtworks.com
     - Introduction of new events and their handlers might require some careful coordination.
 
 ## Channel per event type
-.image images/channel-per-event.png
+.image images/channel-per-event.drawio.png
 
 - Each event stream has clear logical meaning.
 - Observers can subscribe to a particular stream of their interest.
 - Schema is fixed for each of the event stream.
 
 ## Command with a reply in event (anti)pattern
-.image images/command-reply-in-event.png
+.image images/command-reply-in-event.drawio.png
 
 - The sender sends a command over a point-to-point channel.
 - Server emits the response in its event stream.
@@ -148,7 +148,7 @@ harshadn@thoughtworks.com
     - Highly inefficient.
 
 ## Command with a reply channel pattern
-.image images/command-reply-in-channel.png
+.image images/command-reply-in-channel.drawio.png
 
 - The sender sends a command over a point-to-point channel.
 - The sender specifies the address of the reply channel.
@@ -162,7 +162,7 @@ harshadn@thoughtworks.com
 - Monitoring the workflow
  
 ## Choreography
-.image images/choreography.png
+.image images/choreography.drawio.png
 
 - *Highly decoupled*: Services operate within their bounded context.
 - Services react to their input events as they arrive.
@@ -176,7 +176,7 @@ harshadn@thoughtworks.com
 - Monitoring a choreographed flow is particularly difficult due to its asynchronous nature.
 
 ## Orchestration
-.image images/orchestration.png
+.image images/orchestration.drawio.png
 
 ## Orchestration
 - The workflow is implemented in a central microservice that issues commands to other services.
