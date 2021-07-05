@@ -14,6 +14,9 @@ harshadn@thoughtworks.com
 - Architectural patterns
 
 ## Messaging
+
+.image images/messaging.png
+
 - Two or more processes communicate with each other in an *asynchronous* manner by sending a *message* over a *message channel*.
 - Requires *a messaging middleware* to transfer a message from *sender* to *receiver*. 
 - The *sender* and the *receiver* are completely decoupled from each other.
