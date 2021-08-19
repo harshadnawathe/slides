@@ -63,6 +63,7 @@ harshadn@thoughtworks.com
 - Command-Response messages must contain an identifier for correlation.
 
 ## Command is different than RPC
+- RPC is synchronous.
 - In RPC client thread of execution waits for the response from the server and then processes it.
 
 .image images/rpc.drawio.png
