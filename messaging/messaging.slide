@@ -42,6 +42,12 @@ harshadn@thoughtworks.com
     - The sender is not aware of the receiver.
 - Implementations: Kafka Topic, *JMS Topic, RabbitMQ Exchange*.
 
+## Quiz
+
+- Provide a real world example of following
+  - _Point-to-point_ style communication
+  - _Publish-Subscribe_ style communication
+
 ## Message Types
 
 ## Document message
@@ -98,6 +104,7 @@ harshadn@thoughtworks.com
 ## Message Types summary
 - Document
     - For sharing the data with other applications.
+    - Sent over *point-to-point* or *publish-subscribe* channel.
 - Command
     - For invoking a service on another application.
     - Sent over a *point-to-point channel*.
@@ -140,7 +147,7 @@ harshadn@thoughtworks.com
 - Observers can subscribe to a particular stream of their interest.
 - Schema is fixed for each of the event stream.
 
-## Command with a reply in event (anti)pattern
+## Command with a reply in event pattern
 .image images/command-reply-in-event.drawio.png
 
 - The sender sends a command over a point-to-point channel.
@@ -188,6 +195,11 @@ harshadn@thoughtworks.com
 ## Leftover topics
 - Schema management
 - Distributed transaction handling
-- Failure handling
-- Event router
-- Retry service
+- Event Routing
+- Event Sourcing
+- CQRS
+
+## Reading Material
+- [Enterprise Integration Patterns](https://www.amazon.in/Enterprise-Integration-Patterns-Designing-Deploying/dp/0321200683)
+- [Building Event-Driven Microservices](https://learning.oreilly.com/library/view/building-event-driven-microservices/9781492057888/)
+- [Designing Event-Driven Systems](https://www.confluent.io/resources/ebook/designing-event-driven-systems/)
